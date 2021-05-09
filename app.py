@@ -117,8 +117,15 @@ def mango_page(mango_hash):
     print(url)
     result = requests.request("GET", url)
     status = result.status_code == 200
+    def chap_comp(chapter_json):
+        val = chapter_json['data']['attributes']['chapter']
+        if val == "":
+            val = 0
+        return -float(val)
     if (status):
         result = result.json()['results']
+        print(type(result))
+        result.sort(key=chap_comp)
     
     #meta data for the manga
     meta = requests.request("GET", mango_meta(mango_hash)).json()
