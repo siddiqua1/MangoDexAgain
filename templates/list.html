@@ -2,21 +2,28 @@
 <html lang="en">
 <body>
     {%if results%}
-    <ul>
+    <ul style="list-style-type:none">
         
         {% if tag %}
             {% if offset %}
-                <li><a href="{{'/mango/' + (offset + 100)|string + '/' + tag|e }}">Next</a>
+                <li>
+                    <h2><a href="{{'/mango/' + (offset + 100)|string + '/' + tag|e }}">Next</a></h2>
+                </li>
             {% else %}
-                <li><a href="{{'/mango/100/' + tag|e }}">Next</a>
+                <li>
+                    <h2><a href="{{'/mango/100/' + tag|e }}">Next</a></h2>
+                </li>
             {% endif %}
         {% else %}
-            <li><a href="{{'/mango/' + (offset + 100)|string}}">Next</a>
-            
+            <li>
+                <h2><a href="{{'/mango/' + (offset + 100)|string}}">Next</a></h2>
+            </li>
         {% endif %}
 
         {% for result in results %}
-            <li><a href="{{'/mango_page/' + result.data.id}}">{{ result.data.attributes.title.en }}</a>
+            <li>
+                <a href="{{'/mango_page/' + result.data.id}}">{{ result.data.attributes.title.en }}</a>
+            </li>
         {% endfor %}
         
     </ul>

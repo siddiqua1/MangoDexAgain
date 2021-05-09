@@ -1,16 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
+    {% if preview %}
+        <img src="{{preview}}" width="400" height="auto"/>
+    {% else %}
+        <h1>No Chapters Avaliable</h1>
+    {% endif %}
+
+    {% if meta %}
+        <h2>Title: {{ meta.data.attributes.title.en }}</h2>
+        {% if meta.data.attributes.description.en %}
+            <p>Description: {{meta.data.attributes.description.en}} </p>
+        {% else %}
+            <p> No description avaliable </p>
+        {% endif %}
+
+        <p>Tags</p>
+        <ul style="list-style-type:none">
+            {% for tag in meta.data.attributes.tags %}
+                <li>
+                    <a href="{{'/mango/0'+ '/' + tag.id|e }}">{{ tag.attributes.name.en }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+    <h1>Error getting mango data</h1>
+    {% endif %}
+    
+    <h2>Chapter List</h2>
     {%if results%}
-    <ul>
+    <ul style="list-style-type:none">
 
         {% for result in results %}
             <li><a href="{{'/chapter/' + result.data.id}}">Chapter {{ result.data.attributes.chapter }} : {{ result.data.attributes.title }}</a>
         {% endfor %}
         
     </ul>
+
+    
     {% else %}
-    <h1>Error getting mango</h1>
+        <h1>Error getting mango</h1>
     {% endif %}
 </body>
 </html>
