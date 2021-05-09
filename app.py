@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 from collections import OrderedDict
 
 app = Flask(__name__)
+prod = os.getenv("PROD", 'False').lower() in ('true', '1', 't')
 
 base_url = "https://api.mangadex.org/"
 # Append the chapter uuid to get a new url for hosting that chapter
@@ -149,6 +150,8 @@ def adhoc_test():
 
 
 if __name__ == '__main__':
-  port = int(os.environ.get('PORT', 5000))
-  #app.run(debug=True)
-  app.run(host = '0.0.0.0', port = port)
+    if prod:
+        port = int(os.environ.get('PORT', 5000))
+        app.run(host = '0.0.0.0', port = port)
+    else: 
+        app.run(debug=True)
