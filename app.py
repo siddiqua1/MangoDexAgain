@@ -113,15 +113,19 @@ def mango_no_tag(offset):
 def mango_page(mango_hash):
     url = view_mango(mango_hash)
     #data for chapter 
-    result = requests.request("GET", url).json()['results']
-
+    print(url)
+    result = requests.request("GET", url)
+    status = result.status_code == 200
+    if (status):
+        result = result.json()['results']
+    
     #meta data for the manga
     meta = requests.request("GET", mango_meta(mango_hash)).json()
     print(mango_meta(mango_hash))
     #image preview for mango (generally page two of the first chapter)
     #use data saver version
     preview = 0
-    if len(result) > 0:
+    if status and len(result) > 0:
         chapter1 = result[-1]['data']
         server = get_server(chapter1['id'])
         preview = get_img_preview(server,chapter1['attributes']['hash'],chapter1['attributes']['dataSaver'] ,m=0)
@@ -146,5 +150,5 @@ def adhoc_test():
 
 if __name__ == '__main__':
   port = int(os.environ.get('PORT', 5000))
-  #app.run(debug=True)
-  app.run(host = '0.0.0.0', port = port)
+  app.run(debug=True)
+  #app.run(host = '0.0.0.0', port = port)
