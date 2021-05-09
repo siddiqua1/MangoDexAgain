@@ -22,12 +22,37 @@ def mango_list_url(offset=0, tags = []):
 
 def view_mango(mango_hash):
     """
-    returns the url to get list of 100 mango
-    can take in a starting offset and an array of tag hashes
+    returns the url to get feed for a given mango
+    english is the best language
     """
     url = base_url + "manga/" + mango_hash + "/feed?locales[]=en"
     return url
-    
+def get_server(chap_id):
+    """
+    returns the url to server to retrieve chap from
+    """
+    url = server_url + chap_id
+    result = requests.request("GET", url).json()['baseUrl']
+    return result
+def get_pages(chap_hash):
+    """
+    returns the filenames of the pages in a given chapter
+    """
+    url = base_url + 'chapter/' + chap_hash
+    pages = requests.request("GET", url).json()['data']['attributes']
+ 
+    return pages['data'], pages['hash'] 
+def get_images(server,chap_hash,images):
+    """
+    returns an array of the urls in a given chapter when provided the mangodex at home server, chapter hash and the file names of the images
+    """
+    chapter=[]
+    url = server+"/data/"+chap_hash
+    for i in images:
+        page=url+'/'+i
+        chapter.append(page)
+    return chapter
+
 f = open("tags.json", "r")
 
 mango_tags=json.loads(f.read())
@@ -41,7 +66,6 @@ tag_data= OrderedDict(sorted(tag_data.items()))
 
 @app.route('/')
 def index():
-    # print("test")
     return render_template("index.html")
 
 @app.route('/mango/<int:offset>')
@@ -55,12 +79,15 @@ def mango(offset):
 def mango_page(mango_hash):
     url = view_mango(mango_hash)
     result = requests.request("GET", url).json()['results']
-    # aList = json.dumps(jsonString)
-    
     return render_template("mango.html", results = result)
 
-
-
+@app.route('/chapter/<string:chap_id>')
+def chapter_loader(chap_id):
+    data, chap_hash = get_pages(chap_id)
+    server = get_server(chap_id)
+    images = get_images(server,chap_hash,data)
+    
+    return render_template("chapter.html",images=images)
 
 @app.route('/tags')
 def tags():

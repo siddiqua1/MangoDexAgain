@@ -5,7 +5,7 @@
     <ul>
 
         {% for result in results %}
-            <li><a href="{{'/chapter/' + result.data.id}}">Chapter {{ result.data.attributes.title.chapter }}: {{ result.data.attributes.title }}</a>
+            <li><a href="{{'/chapter/' + result.data.id}}">Chapter {{ result.data.attributes.chapter }} : {{ result.data.attributes.title }}</a>
         {% endfor %}
         
     </ul>

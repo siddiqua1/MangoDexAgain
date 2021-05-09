@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-    {%if results%}
+    {%if images%}
     <ul>
 
-        {% for result in results %}
-            <li><a href="{{'/chapter/' + result.data.id}}">Chapter {{ result.data.attributes.title.chapter }}: {{ result.data.attributes.title }}</a>
+        {% for result in images %}
+        <center><img src="{{result}}"/></center>
         {% endfor %}
         
     </ul>
     {% else %}
-    <h1>Error getting mango</h1>
+    <h1>Error getting images, try in a minute</h1>
     {% endif %}
 </body>
 </html>
