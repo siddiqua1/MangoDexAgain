@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
+    {% if mango_id %}
+    <center><a href="{{'/mango_page/' + mango_id}}">Mango Page</a></center>
+    {% else %}
+    <h1>Error getting mango associated with this chapter</h1>
+    {% endif %}
+
     {%if images%}
     <ul>
 
@@ -11,6 +17,13 @@
     </ul>
     {% else %}
     <h1>Error getting images, try in a minute</h1>
+    {% endif %}
+
+
+    {% if mango_id %}
+    <center><a href="{{'/mango_page/' + mango_id}}">Mango Page</a></center>
+    {% else %}
+    <h1>Error getting mango associated with this chapter</h1>
     {% endif %}
 </body>
 </html>

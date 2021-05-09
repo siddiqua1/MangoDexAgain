@@ -4,10 +4,15 @@
     {%if results%}
     <ul>
         
-        {% if offset %}
-            <li><a href="{{'/mango/' + (offset + 100)|string}}" + offset + 100>Next</a>
+        {% if tag %}
+            {% if offset %}
+                <li><a href="{{'/mango/' + (offset + 100)|string + '/' + tag|e }}">Next</a>
+            {% else %}
+                <li><a href="{{'/mango/100/' + tag|e }}">Next</a>
+            {% endif %}
         {% else %}
-            <li><a href="/mango/100">Next</a>
+            <li><a href="{{'/mango/' + (offset + 100)|string}}">Next</a>
+            
         {% endif %}
 
         {% for result in results %}

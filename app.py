@@ -1,7 +1,8 @@
+
+import os,json,requests
 from flask import Flask, render_template
-import json
 from collections import OrderedDict
-import requests
+
 app = Flask(__name__)
 
 base_url = "https://api.mangadex.org/"
@@ -39,9 +40,10 @@ def get_pages(chap_hash):
     returns the filenames of the pages in a given chapter
     """
     url = base_url + 'chapter/' + chap_hash
-    pages = requests.request("GET", url).json()['data']['attributes']
+    pages = requests.request("GET", url).json()
  
-    return pages['data'], pages['hash'] 
+    return pages['data']['attributes']['data'], pages['data']['attributes']['hash'], pages['relationships'][1]['id']
+
 def get_images(server,chap_hash,images):
     """
     returns an array of the urls in a given chapter when provided the mangodex at home server, chapter hash and the file names of the images
@@ -68,8 +70,18 @@ tag_data= OrderedDict(sorted(tag_data.items()))
 def index():
     return render_template("index.html")
 
+@app.route('/mango/<int:offset>/<string:tag>')
+def mango(offset, tag=None):
+    tags = []
+    if (tag != None):
+        tags.append(tag)
+    url = mango_list_url(offset=offset,tags=tags)
+    result = requests.request("GET", url).json()['results']
+
+    return render_template("list.html", results = result, offset = offset, tag=tag)
+
 @app.route('/mango/<int:offset>')
-def mango(offset):
+def mango_no_tag(offset):
     url = mango_list_url(offset=offset)
     result = requests.request("GET", url).json()['results']
 
@@ -83,13 +95,18 @@ def mango_page(mango_hash):
 
 @app.route('/chapter/<string:chap_id>')
 def chapter_loader(chap_id):
-    data, chap_hash = get_pages(chap_id)
+    data, chap_hash, mango_id = get_pages(chap_id)
     server = get_server(chap_id)
     images = get_images(server,chap_hash,data)
     
-    return render_template("chapter.html",images=images)
+    return render_template("chapter.html",images=images, mango_id=mango_id)
 
 @app.route('/tags')
 def tags():
-    return str(tag_data)
-app.run(debug=True)
+    
+    return render_template("tag.html",tags=tag_data)
+
+
+if __name__ == '__main__':
+  port = int(os.environ.get('PORT', 5000))
+  app.run(host = '0.0.0.0', port = port)
