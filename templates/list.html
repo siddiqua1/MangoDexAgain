@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    {%if results%}
+    <ul>
+        
+        {% if offset %}
+            <li><a href="{{'/mango/' + (offset + 100)|string}}" + offset + 100>Next</a>
+        {% else %}
+            <li><a href="/mango/100">Next</a>
+        {% endif %}
+
+        {% for result in results %}
+            <li><a href="{{'/mango_page/' + result.data.id}}">{{ result.data.attributes.title.en }}</a>
+        {% endfor %}
+        
+    </ul>
+    {% else %}
+    <h1>Error getting mango</h1>
+    {% endif %}
+</body>
+</html>
