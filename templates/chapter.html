@@ -25,5 +25,10 @@
     {% else %}
     <h1>Error getting mango associated with this chapter</h1>
     {% endif %}
+    {% if next_chap_id %}
+    <center><a href="{{'/chapter/' + next_chap_id}}">Next Chapter</a></center>
+    {% else %}
+    <h1>No Next Chapter</h1>
+    {% endif %}
 </body>
 </html>

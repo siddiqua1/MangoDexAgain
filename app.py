@@ -45,6 +45,7 @@ def get_server(chap_id):
     url = server_url + chap_id
     result = requests.request("GET", url).json()['baseUrl']
     return result
+
 def get_pages(chap_hash):
     """
     returns the filenames of the pages in a given chapter
@@ -77,6 +78,35 @@ def get_img_preview(server,chap_hash,images,m=1):
     page=url+'/'+images[m]
 
     return page
+
+
+def get_chap_list(mango_hash):
+    """
+    Given a mango hash, returns the list of the chapter hashs.
+
+    Keyword Arguments:
+    - mango_hash (str): The hash of the given mango
+    
+    Returns:
+    - A list of chapter hashs
+    """
+    url = view_mango(mango_hash)
+    results = requests.request("GET", url)
+    status = results.status_code == 200
+    def chap_comp(chapter_json):
+        val = chapter_json['data']['attributes']['chapter']
+        if val == "":
+            val = 0
+        return -float(val)
+    if (status):
+        results = results.json()['results']
+        results.sort(key=chap_comp, reverse=True)
+
+    chap_hashs = []
+    for result in results:
+        chap_hashs.append(result['data']['id'])
+        print(result['data']['attributes']['chapter'])
+    return chap_hashs
 
 f = open("tags.json", "r")
 
@@ -144,8 +174,12 @@ def chapter_loader(chap_id):
     data, chap_hash, mango_id = get_pages(chap_id)
     server = get_server(chap_id)
     images = get_images(server,chap_hash,data)
-    
-    return render_template("chapter.html",images=images, mango_id=mango_id)
+    chapters = get_chap_list(mango_id)
+    next_chap_id = ""
+    print(chapters.index(chap_id))
+    if chapters.index(chap_id) != len(chapters) - 1 and chapters.index(chap_id) != -1:
+        next_chap_id = chapters[chapters.index(chap_id) + 1]
+    return render_template("chapter.html",images=images, mango_id=mango_id, next_chap_id=next_chap_id)
 
 @app.route('/tags')
 def tags():
