@@ -174,8 +174,9 @@ def chapter_loader(chap_id):
     images = get_images(server,chap_hash,data)
     chapters = get_chap_list(mango_id)
     next_chap_id = ""
-    if chapters.index(chap_id) != len(chapters) - 1 and chapters.index(chap_id) != -1:
-        next_chap_id = chapters[chapters.index(chap_id) + 1]
+    if chap_id in chapters:
+        if chapters.index(chap_id) != len(chapters) - 1 and chapters.index(chap_id) != -1 :
+            next_chap_id = chapters[chapters.index(chap_id) + 1]
     return render_template("chapter.html",images=images, mango_id=mango_id, next_chap_id=next_chap_id)
 
 @app.route('/tags')
