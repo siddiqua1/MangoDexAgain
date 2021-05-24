@@ -10,7 +10,7 @@ base_url = "https://api.mangadex.org/"
 # Append the chapter uuid to get a new url for hosting that chapter
 server_url = base_url + "at-home/server/" 
 mango_hash = "1496eac0-88d0-426c-9e84-0a12c40fee9b"
-mango_url = base_url + "manga/" + mango_hash + "/feed?locales[]=en"
+mango_url = base_url + "manga/" + mango_hash + "/feed?translatedLanguage[]=en"
 
 def mango_list_url(offset=0, tags = []):
     """
@@ -27,7 +27,7 @@ def view_mango(mango_hash):
     returns the url to get feed for a given mango
     english is the best language
     """
-    url = base_url + "manga/" + mango_hash + "/feed?locales[]=en"
+    url = base_url + "manga/" + mango_hash + "/feed?translatedLanguage[]=en"
     return url
 
 def mango_meta(mango_hash):
@@ -95,7 +95,7 @@ def get_chap_list(mango_hash):
     status = results.status_code == 200
     def chap_comp(chapter_json):
         val = chapter_json['data']['attributes']['chapter']
-        if val == "":
+        if val == "" or val == None:
             val = 0
         return -float(val)
     if (status):
@@ -105,7 +105,6 @@ def get_chap_list(mango_hash):
     chap_hashs = []
     for result in results:
         chap_hashs.append(result['data']['id'])
-        print(result['data']['attributes']['chapter'])
     return chap_hashs
 
 f = open("tags.json", "r")
@@ -143,23 +142,22 @@ def mango_no_tag(offset):
 @app.route('/mango_page/<string:mango_hash>')
 def mango_page(mango_hash):
     url = view_mango(mango_hash)
-    #data for chapter 
+    #data for chapter
     print(url)
     result = requests.request("GET", url)
     status = result.status_code == 200
     def chap_comp(chapter_json):
         val = chapter_json['data']['attributes']['chapter']
-        if val == "":
+        if val == "" or val == None:
             val = 0
         return -float(val)
     if (status):
         result = result.json()['results']
-        print(type(result))
-        result.sort(key=chap_comp)
+
+        result.sort(key=lambda chap_comp: str(chap_comp) if chap_comp is None or type(chap_comp) == dict else chap_comp)
     
     #meta data for the manga
     meta = requests.request("GET", mango_meta(mango_hash)).json()
-    print(mango_meta(mango_hash))
     #image preview for mango (generally page two of the first chapter)
     #use data saver version
     preview = 0
@@ -176,7 +174,6 @@ def chapter_loader(chap_id):
     images = get_images(server,chap_hash,data)
     chapters = get_chap_list(mango_id)
     next_chap_id = ""
-    print(chapters.index(chap_id))
     if chapters.index(chap_id) != len(chapters) - 1 and chapters.index(chap_id) != -1:
         next_chap_id = chapters[chapters.index(chap_id) + 1]
     return render_template("chapter.html",images=images, mango_id=mango_id, next_chap_id=next_chap_id)
