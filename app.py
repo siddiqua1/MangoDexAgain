@@ -153,8 +153,7 @@ def mango_page(mango_hash):
         return -float(val)
     if (status):
         result = result.json()['results']
-
-        result.sort(key=lambda chap_comp: str(chap_comp) if chap_comp is None or type(chap_comp) == dict else chap_comp)
+        result.sort(key=lambda chap_json: str(chap_json) if chap_comp(chap_json) is None or type(chap_comp(chap_json)) == dict else chap_comp(chap_json))
     
     #meta data for the manga
     meta = requests.request("GET", mango_meta(mango_hash)).json()
